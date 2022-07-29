@@ -7,22 +7,21 @@ import fs from "fs"
 
 import { v4 as uuidv4 } from 'uuid'
 
-//te falta en el front procesar cuando 
 
-let contractAd, deployTxId
+
+let contractAd
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
     const signatureId = uuidv4()
   
-    const { metadata, metaAccount } = req.body;
-    const response = await deployNftSm(metadata, metaAccount);
-    
-    console.log(response);
+    const { metadata, metaAccount, price, amount } = req.body;
+    const response = await deployNftSm(metadata, metaAccount, price, amount);
+  
     res.status(200).json({ message: `well done` });
   } else if (req.method === "GET") {
-    //const rep = await  getBalance()
-    //console.log(rep)
+    const rep = await  getBalance()
+    
   }
 }
 
@@ -49,7 +48,6 @@ const uploadToIpfs = async (file) => {
   axios(config)
     .then((resp) => {
       const res = resp.data?.ipfsHash;
-      console.log(res, "hash");
       return res;
     })
     .catch((error) => {
@@ -58,7 +56,7 @@ const uploadToIpfs = async (file) => {
     });
 };
 
-const deployNftSm = async (meta, seller) => {
+const deployNftSm = async (meta, seller, price, amount) => {
   const config = {
     method: 'POST',
     headers: {
@@ -82,7 +80,7 @@ const deployNftSm = async (meta, seller) => {
      
   const res = await fetch(`${process.env.NEXT_PUBLIC_TATUM_URL}nft/deploy`, config)
   const data = await res.json()
-  deployTxId = data.txId
+
 
   setTimeout(async () => {
       const metadata = await uploadToIpfs(meta)
@@ -92,8 +90,9 @@ const deployNftSm = async (meta, seller) => {
          const mint = await mintNft(contractAd, seller, metadata)
           console.log('mint', mint) 
           setTimeout(async () => {
-            const listing = await createListing(contractAd, seller )
+            const listing = await createListing(contractAd, seller, price, amount )
             console.log('listing', listing)
+            return listing
           }, 1000);
         }, 2000);  
       }, 3000);
@@ -135,7 +134,7 @@ const mintNft = async (smAddr, account, ipfsUrl) => {
     },
     body: JSON.stringify({
       chain: "CELO",
-      tokenId: "100005",
+      tokenId: "100009",
       to: account,
       contractAddress: smAddr,
       url: `ipfs://${ipfsUrl}`,
@@ -153,8 +152,8 @@ const mintNft = async (smAddr, account, ipfsUrl) => {
 
 };
 
-const createListing = async (nftAddress, sellerAddress) => {
-  console.log(sellerAddress, 'nftAddress', process.env.NEXT_PUBLIC_PRIVATE_KEY)
+const createListing = async (nftAddress, sellerAddress,price, amount) => {
+
 const config = {
   method: 'POST',
   headers: {
@@ -167,12 +166,16 @@ const config = {
     contractAddress: process.env.NEXT_PUBLIC_TATUM_MARKETPLACE_CONTRACT_ADDRESS,
     nftAddress: nftAddress,
     seller: sellerAddress,
-    listingId: "100005",
-    amount: "1",
-    tokenId: "100005",
-    price: "2",
+    listingId: "100009",
+    amount: amount,
+    tokenId: "100009",
+    price: price,
     isErc721: true,
-    fromPrivateKey: process.env.NEXT_PUBLIC_PRIVATE_KEY
+    fromPrivateKey: process.env.NEXT_PUBLIC_PRIVATE_KEY,
+    fee: {
+      gasLimit: '40000',
+      gasPrice: '20'
+    }
   }),
 }
  const res = await fetch(
@@ -183,25 +186,3 @@ const config = {
 
 }
 
-const createMarketPlace = async () => {
-  const resp = await axios.post(
-    `https://api-eu1.tatum.io/v3/blockchain/marketplace/listing`,
-    {
-    
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.NEXT_PUBLIC_TATUM_API_KEY,
-      },
-      body: JSON.stringify({
-        chain: "CELO",
-        feeRecipient: "0x9525cdd2870bf078d8f6c0a1ee4a4575c6d459dc",
-        feeCurrency: "CELO",
-        marketplaceFee: 150,
-        fromPrivateKey: "0xa067e208dbf54a06970c71132ff936f38013b25829dda89c2e9eecb8251285e6",
-      }),
-    }
-  );
-
-  const data = await resp.json();
-  console.log(data);
-};

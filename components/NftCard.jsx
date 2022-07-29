@@ -1,11 +1,20 @@
+import { Box, Textarea, Input, Text, Button } from "@chakra-ui/react";
+import { ImageInput } from "./ImageInput";
+import { useStateContext } from "../context/StateContext";
 
-import {Box, Textarea, Input, Text, Button } from '@chakra-ui/react'
-import {ImageInput} from './ImageInput'
-import { useStateContext } from '../context/StateContext'
-
-const NftCard = ({fileUpload}) => {
-  
-  const { handleUpload, file, setNameNft, setdescription } = useStateContext()
+const NftCard = ({ fileUpload }) => {
+  const {
+    handleUpload,
+    file,
+    nameNft,
+    setNameNft,
+    description,
+    setdescription,
+    price,
+    setPrice,
+    amount,
+    setAmount,
+  } = useStateContext();
 
   return (
     <Box className="input-group">
@@ -24,8 +33,8 @@ const NftCard = ({fileUpload}) => {
       <Input
         id="name"
         placeholder="Name for your NFT"
-        onChange={(e)=>setNameNft(e.target.value)}
-        
+        onChange={(e) => setNameNft(e.target.value)}
+        value={nameNft}
         required
         sx={{
           fontSize: `14px`,
@@ -50,16 +59,13 @@ const NftCard = ({fileUpload}) => {
           >
             Image
           </Box>
+
           <Box sx={{ height: "16px" }}></Box>
           {
-            <ImageInput
-             isReady={true}
-             inputPlaceholder="Choose yout file"
-            >
+            <ImageInput isReady={true} inputPlaceholder="Choose your file">
               {file ? "Change File" : "Choose File"}
             </ImageInput>
           }
-          <Box sx={{ height: `16px` }}></Box>
         </Box>
       ) : null}
       <Text
@@ -78,7 +84,8 @@ const NftCard = ({fileUpload}) => {
       <Textarea
         id="description"
         placeholder="Describe your creation"
-        onChange={(e)=>setdescription(e.target.value)}
+        value={description}
+        onChange={(e) => setdescription(e.target.value)}
         required
         sx={{
           fontSize: `14px`,
@@ -88,9 +95,81 @@ const NftCard = ({fileUpload}) => {
           borderRadius: `24px`,
         }}
       />
-      <Button onClick={handleUpload}>touch Me</Button>
-    </Box>
-  )
-}
+      <Box
+        style={{
+          fontSize: "12px",
+          lineHeight: "14px",
+          fontWeight: 600,
+          letterSpacing: "1px",
+          textTransform: "uppercase",
+          color: "black",
+          marginTop: "20px",
+        }}
+      >
+        PRICE
+      </Box>
+      <Input
+        id="price"
+        placeholder="Set a CELO price for your NFT"
+        onChange={(e) => setPrice(e.target.value)}
+        value={price}
+        required
+        sx={{
+          fontSize: `14px`,
+          width: `clamp(250px, 33vw, 400px)`,
+          padding: `24px 16px`,
+          margin: `1ex 0`,
+          borderRadius: `24px`,
+        }}
+      />
 
-export default NftCard
+      <Box
+        style={{
+          fontSize: "12px",
+          lineHeight: "14px",
+          fontWeight: 600,
+          letterSpacing: "1px",
+          textTransform: "uppercase",
+          color: "black",
+          marginTop: "20px",
+        }}
+      >
+        AMOUNT
+      </Box>
+      <Input
+        id="amount"
+        placeholder="Amount of tokens to mint"
+        onChange={(e) => setAmount(e.target.value)}
+        value={amount}
+        mb={"14"}
+        required
+        sx={{
+          fontSize: `14px`,
+          width: `clamp(250px, 33vw, 400px)`,
+          padding: `24px 16px`,
+          margin: `1ex 0`,
+          borderRadius: `24px`,
+        }}
+      />
+      <Box mt={'14'}>
+        <Button
+          w={"full"}
+          bg={"#2ccd9a"}
+          color={"white"}
+          _hover={{
+            bg: "#FBCC5C",
+            cursor: "pointer",
+            border: "1px",
+            borderColor: "#2ccd9a",
+            
+          }}
+          onClick={handleUpload}
+        >
+          Mint and List NFT
+        </Button>
+      </Box>
+    </Box>
+  );
+};
+
+export default NftCard;

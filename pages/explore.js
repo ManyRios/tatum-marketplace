@@ -6,10 +6,14 @@ import {Box, Flex } from '@chakra-ui/react'
 
 const explore = ({data}) => {
   return (
-    <Box display={'flex'} flex={'wrap'}>
+    <Box >
         <h1>
-            Hello
+            Explore the last NFT
         </h1>
+        <Box display={'flex'} flex={'wrap'}>
+
+
+        </Box>
        
     </Box>
   )
@@ -18,7 +22,7 @@ const explore = ({data}) => {
 export default explore
 
 
-/* export async function getStaticProps() {
+export async function getServerSideProps() {
   const contractAddress = process.env.NEXT_PUBLIC_TATUM_MARKETPLACE_CONTRACT_ADDRESS
   const res = await fetch( `${process.env.NEXT_PUBLIC_TATUM_URL}blockchain/marketplace/listing/CELO/${contractAddress}/INITIATED`, {
     headers: {
@@ -26,10 +30,12 @@ export default explore
   }}
   )
   const data = await res.text()
-  console.log(data, 'data')
+    setTimeout(() => {
+      
+    }, 2000);
   return {
     props: {
       data: data
     } 
   }
-} */
+} 

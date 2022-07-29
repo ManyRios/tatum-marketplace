@@ -1,21 +1,22 @@
 
 import React, {useState, useEffect } from 'react'
 
-import {Box, Flex, SimpleGrid, Text, Image, Button, VStack, Stack, Tabs } from '@chakra-ui/react'
+import {Box, SimpleGrid, Image, VStack, Stack } from '@chakra-ui/react'
 import { useStateContext } from '../context/StateContext'
 
-import {NftCard} from '../components'
+import {NftCard, LoaderListing} from '../components'
 
 
 const Listnft = ({props}) => {
 
-  const {imageData, nameImage } = useStateContext()
+  const {imageData, nameImage, listing, setListing } = useStateContext()
 
 
   let listItemCheck
 
   return (
     <>
+      {listing ? <LoaderListing isOpens={true} minting={listing} setMinting={setListing}/> : ''}
       <SimpleGrid columns={{sm: 1, md: 2}} spacing={8}>
           <Box position={'relative'}>
           <VStack marginRight="53px" sx={{ position: `sticky`, top: `20px` }}>
@@ -75,53 +76,12 @@ const Listnft = ({props}) => {
             alignItems={"center"}
             shadow={"md"}
           >
-            <div style={{ marginBottom: "24px", display: `flex` }}></div>
-            <div>
+            <Box style={{ marginBottom: "24px", display: `flex` }}></Box>
+            <Box>
               <NftCard
                 fileUpload = {true}
               />
-            </div>
-            <div style={{ marginTop: "16px" }}>
-              <Box
-                sx={{
-                  display: `flex`,
-                  gap: `12px`,
-                  alignItems: `center`,
-                  marginBottom: `8px`,
-                }}
-              >
-                {!listItemCheck && (
-                  <Box
-                    sx={{
-                      width: `16px`,
-                      height: `16px`,
-                      borderRadius: `4px`,
-                      border: `2px solid rgba(0,0,0,0.3)`,
-                      display: `block`,
-                    }}
-                    _hover={{
-                      cursor: `pointer`,
-                    }}
-                    onClick={() => setListItemCheck(!listItemCheck)}
-                  ></Box>
-                )}
-              </Box>
-              <div>
-                {listItemCheck && (
-                  <Tabs
-                    isFitted
-                    variant="enclosed"
-                    onChange={(e) => setIsAuction(!isAuction)}
-                  >
-                    <Box mb="1em" w={"80"}>
-                      <Text>Fixed Price</Text>
-                    </Box>
-                    
-                  </Tabs>
-                )}
-                
-              </div>
-            </div>
+            </Box>
           </Stack>
           </Box>
       </SimpleGrid>

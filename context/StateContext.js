@@ -15,17 +15,17 @@ export const StateContext = ({ children }) => {
   const { metaAccount } = useMetamaskContext();
   const [listing, setListing] = useState(false)
   const [price, setPrice] = useState('')
-  const [amount, setAmount] = useState('')
+  const [amount, setAmount] = useState('');
+  const [minting, setMinting] = useState(false)
 
   const handleClickImage = async () => {
     selectFiles(
       { accept: "image/*", multiple: false },
-      async ({ name, size, source, file }) => {
+       ({ name, size, source, file }) => {
         setSize(size);
         setImageData(source);
         setNameImage(name);
         setnftFile(file);
-        console.log(file, nftFile);
       }
     );
   };
@@ -34,22 +34,29 @@ export const StateContext = ({ children }) => {
     setSize("");
     setImageData("");
     setNameImage("");
-    setnftFile(null);
+    setnftFile();
+    setNameNft('')
+    setdescription('')
+    setAmount('')
+    setPrice('')
   }
 
-  const timerListing = (response) => {
-    if(response){
-      setListing(true)
+  const timerListing = () => {
+
       setTimeout(() => {
         setListing(false)
         reloadCard()
       }, 8000);
-    }
+    
   }
 
   const handleUpload = async () => {
-    if (nameNft && description && imageData) {
-      if (file) {
+
+    if(metaAccount){
+        
+        
+    if (nameNft && description && imageData && price && amount) {
+      
         const form = new FormData();
         form.append("file", nftFile);
         const res = await fetch(`${process.env.NEXT_PUBLIC_TATUM_URL}ipfs`, {
@@ -72,13 +79,20 @@ export const StateContext = ({ children }) => {
             headers: {
               "Content-type": "application/json",
             },
-            body: JSON.stringify({ metadata, metaAccount }),
+            body: JSON.stringify({ metadata, metaAccount, price, amount }),
           });
 
           const resSer = await response;
+          setListing(true)
+          timerListing()
         }
-      }
+     
+    }else{
+      alert('Please fill all the required fields')
     }
+  }else{
+    alert('Please connect your wallet')
+  }
   };
 
   return (
